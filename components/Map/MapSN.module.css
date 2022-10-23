@@ -1,0 +1,146 @@
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 100px;
+  min-height: 100px;
+  margin: auto;
+}
+
+.s0 {
+  fill: #ffdea9;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s1 {
+  fill: #ffb744;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s2 {
+  fill: #ffca75;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s3 {
+  fill: #fffdcd;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s4 {
+  fill: #fffc9a;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s5 {
+  fill: #fffa75;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s6 {
+  fill: #e2f284;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s7 {
+  fill: #dcf25b;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s8 {
+  fill: #edf2d1;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s9 {
+  fill: #ffadad;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s10 {
+  fill: #ffe6e6;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s11 {
+  fill: #ffd6d6;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s12 {
+  fill: #ff8f8f;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s13 {
+  fill: #eee1f2;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s14 {
+  fill: #e6b9f2;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s15 {
+  fill: #ebcef2;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s16 {
+  fill: #e3a4f2;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s17 {
+  fill: #e8f2ad;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s18 {
+  fill: #ecd5f2;
+  stroke: #636363;
+  stroke-width: 0.5;
+}
+
+.s19 {
+  fill: none;
+}
+
+.s20 {
+  fill: none;
+  stroke: #000;
+  stroke-linejoin: round;
+  stroke-width: 1px;
+}
+
+.dept:hover {
+  fill: #24f09879;
+  stroke: #24f097;
+  stroke-width: 3px;
+}
+
+.dept_select,
+.dept_select:hover {
+  fill: #08659a;
+  stroke: #24f097;
+  stroke-width: 3px;
+}

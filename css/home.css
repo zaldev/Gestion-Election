@@ -1,0 +1,101 @@
+.t-right {
+  position: relative;
+}
+
+.t-right::after {
+  border-style: solid;
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 4px;
+  width: 0;
+  height: 0;
+  border-width: 15px 26px 15px 0;
+  border-color: transparent #24f097 transparent transparent;
+  @apply border-r-primary;
+  clear: both;
+}
+
+.t-left {
+  position: relative;
+}
+
+.t-left::before {
+  border-style: solid;
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 4px;
+  width: 0;
+  height: 0;
+
+  /* border-width: 15px 26px 15px 0;
+  border-color: transparent #24f097 transparent transparent;
+  @apply border-r-primary; */
+  border-width: 15px 0 15px 26px;
+  border-color: transparent transparent transparent #24f097;
+  @apply border-l-primary;
+  clear: both;
+}
+
+
+
+.conteiner {
+
+  @apply m-auto w-full p-2 flex flex-row justify-between items-stretch w-10/12 max-w-[1200px];
+
+}
+
+.item {
+  @apply flex-1 shrink ;
+
+}
+
+/* .item.item-admin{
+  @apply bg-secondary basis-4;
+} */
+
+.item.item-texte {
+
+  @apply flex flex-col justify-center items-center my-1 mx-0;
+
+}
+
+
+
+.item.item-texte h2 {
+  @apply text-center m-0 text-4xl text-secondary mb-4;
+
+}
+
+.item.item-texte h3 {
+
+  @apply text-center text-2xl text-secondary ;
+}
+
+.item.item-texte h2::first-letter {
+  font-size: 3.5em;
+  @apply text-primary;
+}
+
+
+.item img {
+  display: block;
+  width: 500px;
+  height: auto;
+  margin: 10px auto;
+}
+
+
+
+@media (max-width: 750px) {
+  .conteiner {
+
+    @apply flex-col justify-evenly gap-8 mt-14;
+
+  }
+
+  .conteiner.c2 {
+    @apply flex-col-reverse
+  }
+}

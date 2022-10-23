@@ -1,16 +1,39 @@
+import '../css/style.css'
+import '../css/home.css'
 import type { AppProps } from "next/app";
+import DefaultLayout from '../components/layouts/DefaultLayout'
+import AdminLayout from '../components/layouts/AdminLayout'
 import { SessionProvider } from "next-auth/react";
-import Navbar from "../components/Navbar";
-import { ChakraProvider } from "@chakra-ui/react";
+import Header from '../components/Header/Header'
+import Footer from '../components/Footer/Footer'
+import { useRouter } from 'next/router'
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-  return (
-    <ChakraProvider>
+  const router = useRouter()
+  const pat = router.pathname
+  if (pat.includes('/admin'))
+    return (
       <SessionProvider session={session}>
-        <Navbar />
-        <Component {...pageProps} />
+        <AdminLayout>
+          <Component {...pageProps} />
+        </AdminLayout>
       </SessionProvider>
-    </ChakraProvider>
+    )
+  return (
+
+    // <SessionProvider session={session}>
+    // <div>
+    //   <Header />
+    //   <Component {...pageProps} />
+    //   <Footer />
+    // </div>
+    <SessionProvider session={session}>
+      <DefaultLayout>
+        <Component {...pageProps} />
+      </DefaultLayout>
+    </SessionProvider>
+
+    // </SessionProvider>
   );
 }
 
