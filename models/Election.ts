@@ -17,6 +17,16 @@ const electionSchema = new Schema({
     type: Number,
     default: 0,
   },
+  electeurs:{
+    type:[String]
+  },
+  votes_nuls: [{
+    dep_id: String,
+    votants: {
+      type: Number,
+      default: 0
+    }
+  }],
   candidats: [{
     nom_candidat: String,
     partie: String,

@@ -41,6 +41,7 @@ export default async function handler(
                 res.status(400).json({ success: false })
                 console.log(error)
             }
+            break
         default:
             break
     }

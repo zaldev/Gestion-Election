@@ -5,7 +5,8 @@ import { ElectionI } from "../../../models/Election"
 import circonscriptions from "../circonscriptions"
 import { BsPlusSquare } from "react-icons/bs"
 import { HiMinusCircle, HiPlusCircle } from "react-icons/hi"
-import { ajouterElection } from "../../../services/electionService"
+import { ajouterElection, updateElection, voirElections } from "../../../services/electionService"
+import { useRouter } from 'next/router'
 // {
 //     annee: "2020",
 //     etat: 0,
@@ -21,17 +22,34 @@ import { ajouterElection } from "../../../services/electionService"
 
 // }
 
+interface ElectionsProps {
+  elects: Array<ElectionI>,
+}
 
-function Elections() {
-  const [file, setFile] = useState(["", ""])
+
+function Elections(props: ElectionsProps) {
+  const [file, setFile] = useState([])
   const [pictures, setPictures] = useState<File[]>([])//useRef<[]>([null,null]);
   const [encours, setEncours] = useState(false)
+  const router = useRouter()
+
+
+
+
+  const [elections, setElections] = useState<ElectionI[]>(props.elects)
+  const [electAnnees, setElectAnnees] = useState<string[]>(elections.map((e) => e.annee))
+
+
+  const [isElectEncours, setIsElectEncours] = useState(elections.find(el => el.etat === 1) != null)
+
 
 
   const [election, setElection] = useState<ElectionI>(
     {
       annee: "2020",
       etat: 0,
+      electeurs: [],
+      votes_nuls: [],
       candidats: [
         {
           nom_candidat: "",
@@ -51,33 +69,38 @@ function Elections() {
     }
   )
 
+
+  useEffect(() => {
+    setElectAnnees(elections.map((e) => e.annee))
+  }, [elections])
+
   const initialiser = () => {
     setPictures([])
     setFile(["", ""])
     setEncours(false)
     setIsShowing(false)
-    setElection((
-      {
-        annee: "2020",
-        etat: 0,
-        candidats: [
-          {
-            nom_candidat: "",
-            partie: "",
-            url_image: "",
-            color: "",
-            votes: []
-          },
-          {
-            nom_candidat: "",
-            partie: "",
-            url_image: "",
-            color: "",
-            votes: []
-          }
-        ]
-      }
-    ))
+    setElection({
+      annee: "2020",
+      etat: 0,
+      electeurs: [],
+      votes_nuls: [],
+      candidats: [
+        {
+          nom_candidat: "",
+          partie: "",
+          url_image: "",
+          color: "",
+          votes: []
+        },
+        {
+          nom_candidat: "",
+          partie: "",
+          url_image: "",
+          color: "",
+          votes: []
+        }
+      ]
+    })
 
 
   }
@@ -229,16 +252,13 @@ function Elections() {
 
   const ajoute = () => {
     setEncours(true)
-    // console.log(pictures)
 
-    const pics = Array.from(pictures)
     // console.log(pictures[0]);
 
     Object.values(pictures).map(async (pic, i) => {
 
 
       const formData = new FormData();
-      console.log(pic)
 
 
       // Object.values(pic).forEach(fil => {
@@ -255,10 +275,9 @@ function Elections() {
 
       const body = await response.json() as { status: 'ok' | 'fail', message: string, url_img: string };
 
-      console.log(body);
+      // console.log(body);
       if (body.status === 'ok') {
         election.candidats[i].url_image = body.url_img
-        console.log(election)
         // setElection({
         //   ...election,
 
@@ -267,9 +286,14 @@ function Elections() {
     })
 
     setTimeout(() => {
-      ajouterElection(election)
-      setEncours(false)
-      initialiser()
+      ajouterElection({ ...election }).then(() => {
+        setEncours(false)
+        initialiser()
+        elections.push({ ...election })
+        setElections({ ...elections })
+
+      })
+
 
     }, 500);
 
@@ -297,11 +321,11 @@ function Elections() {
   }
 
   const onChangePicture = (e: React.ChangeEvent<HTMLInputElement>, i: number) => {
-    file[i] = URL.createObjectURL(e.target.files[0])
+    i === file.length ? file.push(URL.createObjectURL(e.target.files[0])) : file[i] = URL.createObjectURL(e.target.files[0])
 
-    setFile({ ...file })
+    setFile([...file])
     pictures[i] = e?.target?.files[0]
-    setPictures({ ...pictures });
+    setPictures([...pictures]);
   }
 
   const addCandidat = () => {
@@ -312,25 +336,110 @@ function Elections() {
       color: "",
       votes: []
     })
-    file.push("")
+
+
 
     setElection({ ...election })
   }
   const delCandidat = () => {
     election.candidats.pop()
-    file.pop()
+    file.length === election.candidats.length ? null : file.pop()
 
     setElection({ ...election })
   }
 
+  const demarreElection = (election: ElectionI) => {
+    election.etat = 1
+    setIsElectEncours(true)
+    updateElection(election._id, election)
+
+  }
+
+  const voirStats = (election: ElectionI) => {
+
+    router.push("/admin/elections/" + election.annee)
+  }
+
+
 
   return (
     <>
-      <div className="h-full  flex flex-col mx-2 p-2  ">
-        <div className="flex flex-row justify-between p-2 ">
-          <h1 className="text-secondary text-2xl">Gestion des elections</h1>
-          <span title="Nouvel election" className="text-2xl h-fit text-secondary hover:text-white hover:bg-secondary p-1 rounded-md hover:cursor-pointer" onClick={(e) => setIsShowing(true)}><BsPlusSquare /></span>
+      <div className="overflow-hidden bg-white rounded text-slate-500 shadow-slate-200 w-8/12 mx-auto">
+
+        <div className="p-6">
+          <h3 className=" text-2xl text-center font-semibold text-secondary">
+            Gestion des Elections
+          </h3>
+
+
         </div>
+      </div>
+      <hr className="border-primary border-[1px] rounded-full mx-16" />
+
+      <div className="h-full  flex flex-col mx-2 p-2  ">
+
+        {elections.map((elect, i) => {
+          return (elect.etat === 1) ? <>
+            <div key={i} className="overflow-hidden bg-white rounded shadow-md text-slate-500 shadow-slate-200">
+
+              <div className="p-6">
+                <h3 className="mb-10 text-2xl text-center font-bold text-secondary">
+                  Election {elect.annee}
+                </h3>
+                <div className="flex justify-evenly">
+                  {elect.candidats.map((can, i) => {
+                    // const ring="ring-["+can.color+"]"
+                    const [ms, setMs] = useState(false)
+                    return <>
+                      <span
+                        className="relative cursor-pointer group hover:overflow-visible focus-visible:outline-none"
+                        aria-describedby="tooltip-02"
+                      >
+
+                        <img key={i} className="p-1 w-28 h-28 rounded-full ring-4" src={can.url_image} alt="Bordered avatar"
+                          onMouseEnter={() => { setMs(true) }}
+                          onMouseLeave={() => { setMs(false) }}
+                          style={{
+                            '--tw-ring-color': can.color, background: ms ? can.color : ""
+                          }
+                          } />
+
+
+
+                        <span
+                          role="tooltip"
+                          id="tooltip-02"
+                          className="invisible absolute top-full left-1/2 z-10 mt-2 w-28 -translate-x-1/2 rounded bg-slate-700 p-4 text-sm text-white opacity-0 transition-all before:invisible before:absolute before:left-1/2 before:bottom-full before:z-10 before:mt-2 before:-ml-2 before:border-x-8 before:border-b-8 before:border-x-transparent before:border-b-slate-700 before:opacity-0 before:transition-all before:content-[''] group-hover:visible group-hover:block group-hover:opacity-100 group-hover:before:visible group-hover:before:opacity-100"
+                        >
+                          {can.nom_candidat}
+                        </span>
+                      </span>
+
+                    </>
+
+                  })}
+
+                </div>
+                <div className="flex justify-center mt-6">
+                  <button onClick={() => voirStats(elect)} className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-lg  text-purple-900 font-semibold rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white  focus:ring-4 focus:outline-none focus:ring-blue-300 ">
+                    <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white  rounded-md group-hover:bg-opacity-0">
+                      Voir stats
+                    </span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </>
+            : null
+
+        })
+
+        }
+        <div className="flex flex-row justify-center p-4 ">
+          <span title="Nouvel election" className="text-2xl h-fit text-secondary hover:text-white hover:bg-secondary p-1 rounded-md hover:cursor-pointer" onClick={() => setIsShowing(true)}><BsPlusSquare /></span>
+        </div>
+
 
         {/*<!-- Component: Basic lg sized tab full width --> */}
         <section className="max-w-full" aria-multiselectable="false">
@@ -355,7 +464,7 @@ function Elections() {
                   }`}
                 onClick={() => setTabSelected({ ...tabSelected, currentTab: 1 })}
               >
-                <span>Tab 1</span>
+                <span>Elections a venir</span>
               </button>
             </li>
             <li className="flex-1" role="presentation ">
@@ -374,7 +483,7 @@ function Elections() {
                   }`}
                 onClick={() => setTabSelected({ ...tabSelected, currentTab: 2 })}
               >
-                <span>Tab 2</span>
+                <span>Elections passes</span>
               </button>
             </li>
 
@@ -389,12 +498,61 @@ function Elections() {
               aria-labelledby="tab-label-1a"
               tabindex="-1"
             >
-              <p>
-                What is the recipe for successful achievement? To my mind there
-                are just four essential ingredients: Choose a career you love,
-                give it the best there is in you, seize your opportunities, and be
-                a member of the team.
-              </p>
+              {elections.map((elect, i) => {
+                return (elect.etat === 0) ? <>
+                  <div key={i} className="overflow-hidden bg-white rounded shadow-md text-slate-500 shadow-slate-200">
+
+                    <div className="p-6">
+                      <h3 className="mb-10 text-2xl text-center font-bold text-secondary">
+                        Election {elect.annee}
+                      </h3>
+                      <div className="flex justify-evenly">
+                        {elect.candidats.map((can, i) => {
+                          // const ring="ring-["+can.color+"]"
+                          const [ms, setMs] = useState(false)
+                          return <>
+                            <span
+                              className="relative cursor-pointer group hover:overflow-visible focus-visible:outline-none"
+                              aria-describedby="tooltip-02"
+                            >
+
+                              <img key={i} className="p-1 w-28 h-28 rounded-full ring-4" src={can.url_image} alt="Bordered avatar"
+                                onMouseEnter={() => { setMs(true) }}
+                                onMouseLeave={() => { setMs(false) }}
+                                style={{
+                                  '--tw-ring-color': can.color, background: ms ? can.color : ""
+                                }
+                                } />
+                              <span
+                                role="tooltip"
+                                id="tooltip-02"
+                                className="invisible absolute top-full left-1/2 z-10 mt-2 w-28 -translate-x-1/2 rounded bg-slate-700 p-4 text-sm text-white opacity-0 transition-all before:invisible before:absolute before:left-1/2 before:bottom-full before:z-10 before:mt-2 before:-ml-2 before:border-x-8 before:border-b-8 before:border-x-transparent before:border-b-slate-700 before:opacity-0 before:transition-all before:content-[''] group-hover:visible group-hover:block group-hover:opacity-100 group-hover:before:visible group-hover:before:opacity-100"
+                              >
+                                {can.nom_candidat}
+                              </span>
+                            </span>
+                          </>
+
+                        })}
+
+                      </div>
+                      <div className="flex justify-center mt-6">
+                        {!isElectEncours ?
+                          <button onClick={() => demarreElection(elect)} className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-lg  text-purple-900 font-semibold rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white  focus:ring-4 focus:outline-none focus:ring-blue-300 ">
+                            <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
+                              Demarrer l'election
+                            </span>
+                          </button>
+                          : <h2 className="text-2xl text-center text-primary">En attente ...</h2>}</div>
+
+                    </div>
+                  </div>
+                </> : null
+
+              })
+
+              }
+
             </div>
             <div
               className={`px-6 py-4 ${tabSelected.currentTab === 2 ? "" : "hidden"
@@ -405,17 +563,67 @@ function Elections() {
               aria-labelledby="tab-label-2a"
               tabindex="-1"
             >
-              <p>
-                One must be entirely sensitive to the structure of the material
-                that one is handling. One must yield to it in tiny details of
-                execution, perhaps the handling of the surface or grain, and one
-                must master it as a whole.
-              </p>
+              {elections.map((elect, i) => {
+                return (elect.etat === 2) ? <>
+                  <div key={i} className="overflow-hidden bg-white rounded shadow-md text-slate-500 shadow-slate-200">
+
+                    <div className="p-6">
+                      <h3 className="mb-10 text-2xl text-center font-bold text-secondary">
+                        Election {elect.annee}
+                      </h3>
+                      <div className="flex justify-evenly">
+                        {elect.candidats.map((can, i) => {
+                          // const ring="ring-["+can.color+"]"
+                          const [ms, setMs] = useState(false)
+
+                          return <>
+                            <span
+                              className="relative cursor-pointer group hover:overflow-visible focus-visible:outline-none"
+                              aria-describedby="tooltip-02"
+                            >
+                              <img key={i} className="p-1 w-28 h-28 rounded-full ring-4" src={can.url_image} alt="Bordered avatar"
+                                onMouseEnter={() => { setMs(true) }}
+                                onMouseLeave={() => { setMs(false) }}
+                                style={{
+                                  '--tw-ring-color': can.color, background: ms ? can.color : ""
+                                }
+                                } />
+                              <span
+                                role="tooltip"
+                                id="tooltip-02"
+                                className="invisible absolute top-full left-1/2 z-10 mt-2 w-28 -translate-x-1/2 rounded bg-slate-700 p-4 text-sm text-white opacity-0 transition-all before:invisible before:absolute before:left-1/2 before:bottom-full before:z-10 before:mt-2 before:-ml-2 before:border-x-8 before:border-b-8 before:border-x-transparent before:border-b-slate-700 before:opacity-0 before:transition-all before:content-[''] group-hover:visible group-hover:block group-hover:opacity-100 group-hover:before:visible group-hover:before:opacity-100"
+                              >
+                                {can.nom_candidat}
+                              </span>
+                            </span>
+                          </>
+
+                        })}
+
+                      </div>
+                      <div className="flex justify-center mt-6">
+                        <button onClick={() => voirStats(elect)} className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-lg  text-purple-900 font-semibold rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white  focus:ring-4 focus:outline-none focus:ring-blue-300 ">
+                          <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white  rounded-md group-hover:bg-opacity-0">
+                            Voir les resultats
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </> : null
+
+              })
+
+              }
+
+
             </div>
 
           </div>
         </section>
-        {/*<!-- End Basic lg sized tab full width --> */}
+
+
+
 
 
 
@@ -462,8 +670,8 @@ function Elections() {
                   >
                     <option value="" disabled > </option>
                     {annees.map(c => {
-
-                      return <option key={c} value={c} selected={c === 2020}>{c}</option>
+                      const isIn = electAnnees.includes(c.toString())
+                      return <option key={c} value={c} selected={c === 2020} disabled={isIn} className="disabled:text-red-600">{c} {isIn ? "Existe" : null}</option>
 
                     })
 
@@ -500,7 +708,7 @@ function Elections() {
                     return <>
                       {/* <div  >ok{can.partie}</div> */}
                       <hr className="border-1 border-primary" />
-                      <div id={i === 0 ? "div__v" : ""} key={i} className="relative ml-4 my-4 flex items-center space-x-6">
+                      <div key={i} className="relative ml-4 my-4 flex items-center space-x-6">
                         <div className="shrink-0">
                           {/* <MdAccountCircle size={72} /> */}
                           {file[i] ?
@@ -547,7 +755,7 @@ hover:file:bg-violet-100
                           htmlFor="id-b08"
                           className="absolute left-2 -top-2 z-[1] px-2 text-xs text-slate-400 transition-all before:absolute before:top-0 before:left-0 before:z-[-1] before:block before:h-full before:w-full before:bg-white before:transition-all peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-sm  peer-required:after:content-['\00a0*']  peer-focus:-top-2 peer-focus:text-xs peer-focus:text-emerald-500  peer-disabled:cursor-not-allowed peer-disabled:text-slate-400 peer-disabled:before:bg-transparent"
                         >
-                          Nom du partie
+                          Nom de la partie
                         </label>
                       </div>
                       <div className="relative my-4 ">
@@ -652,5 +860,15 @@ hover:file:bg-violet-100
 
   )
 }
+
+export async function getServerSideProps() {
+  const res1 = await voirElections()
+
+  const elects: ElectionI[] = res1.data.data
+
+
+  return { props: { elects } }
+}
+
 
 export default Elections

@@ -42,7 +42,7 @@ export async function voirElection(id: string) {
 
 export async function updateElection(id: string, election: ElectionI) {
     
-    election._id=undefined
+    // election._id=undefined
     return await axios.put(
 
         "http://localhost:3000/api/elections/" + id,

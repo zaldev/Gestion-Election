@@ -48,6 +48,9 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  id_new_circonscription: {
+    type: String,
+  },
   elections_vote: {
     type: [String]
   },

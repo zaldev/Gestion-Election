@@ -135,12 +135,12 @@
 .dept:hover {
   fill: #24f09879;
   stroke: #24f097;
-  stroke-width: 3px;
+  stroke-width: 1px;
 }
 
 .dept_select,
 .dept_select:hover {
   fill: #08659a;
   stroke: #24f097;
-  stroke-width: 3px;
+  stroke-width: 2px;
 }

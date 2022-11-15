@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import Region from "../../../models/Region";
 import dbConnect from "../../../lib/dbConnect";
+import User from "../../../models/User";
 
 
 // interface ResponseData {
@@ -22,8 +22,8 @@ export default async function handler(
     switch (method) {
         case "GET":
             try {
-                const region = await Region.findOne({ "id_region": id })
-                res.status(200).json({ success: true, data: region })
+                const user = await User.findOne({ "_id": id })
+                res.status(200).json({ success: true, data: user })
             } catch (error) {
                 res.status(400).json({ success: false })
 
@@ -35,8 +35,8 @@ export default async function handler(
         case "PUT":
             try {
 
-                const region = await Region.findOneAndUpdate({ "_id": id },req.body)
-                res.status(201).json({ success: true, data: region })
+                const user = await User.findOneAndUpdate({ "_id": id },req.body)
+                res.status(201).json({ success: true, data: user })
             } catch (error) {
                 res.status(400).json({ success: false })
                 console.log(error)

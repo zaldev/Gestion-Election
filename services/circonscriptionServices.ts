@@ -100,6 +100,22 @@ export async function updateRegion(id: string, region: RegionI) {
     )
 }
 
+export async function updateCirconscription(id: string, circonscription: CirconscriptionI) {
+    
+    const cir = {...circonscription}
+    cir._id=undefined
+    return await axios.put(
+
+        "http://localhost:3000/api/circonscriptions/" + id,
+        cir,
+        {
+            headers: {
+                "Content-Type": content_type,
+            },
+        },
+    )
+}
+
 export async function voirRegions() {
     return await axios.get(
         "http://localhost:3000/api/regions",

@@ -212,6 +212,15 @@
       cursor-pointer;
     }
   }
+
+
+  .elect-sel{
+    @apply  backdrop-blur-sm
+  }
+
+  .elect-desel{
+    @apply  backdrop-blur-sm
+  }
   
   @tailwind utilities;
   

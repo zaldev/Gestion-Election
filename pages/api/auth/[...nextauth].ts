@@ -8,7 +8,8 @@ import dbConnect from "../../../lib/dbConnect";
 import User from "../../../models/User";
 import { compare } from "bcrypt";
 
-export default NextAuth({
+
+export const authOptions = {
   providers: [
     // Email & Password
     CredentialsProvider({
@@ -76,4 +77,6 @@ export default NextAuth({
     }
   }
 }
-);
+
+
+export default NextAuth({ ...authOptions });

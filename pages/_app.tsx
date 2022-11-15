@@ -3,7 +3,7 @@ import '../css/home.css'
 import type { AppProps } from "next/app";
 import DefaultLayout from '../components/layouts/DefaultLayout'
 import AdminLayout from '../components/layouts/AdminLayout'
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import { useRouter } from 'next/router'
@@ -11,6 +11,9 @@ import { useRouter } from 'next/router'
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const router = useRouter()
   const pat = router.pathname
+  if (pat.includes('/404')) {
+    return (<Component {...pageProps} />)
+  }
   if (pat.includes('/admin'))
     return (
       <SessionProvider session={session}>

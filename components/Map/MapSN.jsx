@@ -1,20 +1,60 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './MapSN.module.css'
 
-const MapSN = ({ handleClick2, depSelected }) => {
+const MapSN = ({ handleClick2, depSelected = "" }) => {
+    const [depHover, setDepHover] = useState('-')
+
+    const hoverThis = (id_dep) => {
+        // console.log(id_dep)
+
+        if (id_dep.split("-").includes("dep")) {
+            let nom = id_dep.split('--')[0].split("-")[1].split('_').map((no) =>
+                no.charAt(0).toUpperCase() + no.slice(1)).join(' ')
+            if (nom === "Externe") nom = "Etranger"
+            setDepHover(nom)
+        }
+
+        if (id_dep === 'mon-svg') setDepHover('-')
+
+    }
+
+
     useEffect(() => {
 
-      
-            const dept = document.getElementById(depSelected)  
-            if (!(dept == null)) {
+        if (depSelected === "tout") {
             const depts = document.getElementsByClassName(styles.dept)
             for (let key of depts) {
 
-                if (key.classList.contains(styles.dept_select)) key.classList.remove(styles.dept_select)
+                key.setAttribute("class", " ".concat(key.classList) + " " + styles.dept_select)
             }
-            dept.setAttribute("class", " ".concat(dept.classList) + " " + styles.dept_select)
 
+        } else {
+            const deptt = document.querySelector('[id^="' + depSelected + '"]')
+
+
+            const dept = document.getElementById(depSelected)
+
+            if (!(dept == null)) {
+                const depts = document.getElementsByClassName(styles.dept)
+                for (let key of depts) {
+
+                    if (key.classList.contains(styles.dept_select)) key.classList.remove(styles.dept_select)
+                }
+
+                if (dept.tagName === 'g') {
+                    for (let key of dept.children) {
+                        key.setAttribute("class", " ".concat(key.classList) + " " + styles.dept_select)
+                    };
+                } else {
+                    dept.setAttribute("class", " ".concat(dept.classList) + " " + styles.dept_select)
+                }
+
+
+
+            }
         }
+
+
         // handleClick2(e,id,id_reg)
 
     }, [depSelected])
@@ -34,29 +74,41 @@ const MapSN = ({ handleClick2, depSelected }) => {
 
     // }
     const handleClick = (e, id, id_reg) => {
-        const dept = document.getElementById(id)
-        const depts = document.getElementsByClassName(styles.dept)
-        for (let key of depts) {
+        if (handleClick2 != null) {
+            const dept = document.getElementById(id)
+            const depts = document.getElementsByClassName(styles.dept)
+            for (let key of depts) {
 
-            if (key.classList.contains(styles.dept_select)) key.classList.remove(styles.dept_select)
+                if (key.classList.contains(styles.dept_select)) key.classList.remove(styles.dept_select)
+            }
+            dept.setAttribute("class", " ".concat(dept.classList) + " " + styles.dept_select)
+
+            handleClick2(e, id, id_reg)
         }
-        dept.setAttribute("class", " ".concat(dept.classList) + " " + styles.dept_select)
-        handleClick2(e, id, id_reg)
+
 
 
     }
 
     return (
-        < >
+        <>
+            {handleClick2 != null ? <h2 className='text-center text-secondary text-lg bg-green-100 mb-4 mx-24'>{depHover}</h2> : null}
             <svg
                 version="1.2"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 1265 948"
                 width="1265"
                 height="948"
+                id="mon-svg"
                 className={styles.svg}
+
+                onMouseOver={e => hoverThis(e.target.id)}
+                onMouseLeave={e => setDepHover("-")}
             >
-                {/* <title>Senegal,_administrative_divisions_in_colour_2-svg</title> */}
+
+                {handleClick2 != null ? <circle id="dep-externe" className={styles.dept + ' ' + styles.s0} onClick={(e) => handleClick(e, "dep-externe", "reg-externe")}
+                    cx="1000" cy="70" r="70" title="Etranger"><title>Etranger</title>
+                </circle> : null}
                 <g id="departements">
                     <g id="reg-ziguinchor">
 

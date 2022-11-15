@@ -1,10 +1,10 @@
 .header {
-    @apply  w-screen;
+    @apply w-screen;
 
 }
 
 .header_flex {
-    @apply  h-full flex flex-row bg-secondary;
+    @apply h-full flex flex-row bg-secondary;
 }
 
 header .header_right {
@@ -13,19 +13,18 @@ header .header_right {
     hsla(112, 83%, 26%, 0.572)); */
 
 
-    @apply  flex-1 p-4 shrink  ;
+    @apply flex-1 p-4 shrink;
 }
 
 header .header_left {
-    @apply bg-primary
-    rounded-r-full h-full flex flex-col justify-evenly p-4 basis-6/12;
+    @apply bg-primary rounded-r-full h-full flex flex-col justify-evenly p-4 basis-6/12;
 }
 
 header .header_right .login {
     @apply h-full items-center flex justify-center gap-4;
 }
 
-.username{
+.username {
     @apply text-2xl text-white;
 }
 
@@ -55,7 +54,8 @@ header .header_right .login {
     overflow: hidden;
     transition: all 100ms ease-in-out;
 }
-.text_wonder{
+
+.text_wonder {
     color: #fff;
     font-size: small;
     margin-left: 3em;
@@ -64,6 +64,16 @@ header .header_right .login {
 .primary_input:focus {
     border-color: #3c4fe0;
     box-shadow: 0 1px 0 0 rgb(35 38 59 / 5%);
+}
+
+.primary_button:disabled,
+.primary_button:disabled:hover {
+    cursor: default;
+    background-image: linear-gradient(180deg,
+            hsl(112, 39%, 49%),
+            hsl(112, 30%, 45%));
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+        0 4px 6px 0 rgb(93 100 148 / 20%);
 }
 
 .primary_button {
@@ -75,7 +85,7 @@ header .header_right .login {
     color: #fff;
     font-size: 20px;
     height: 38px;
-    
+
     padding: 4px 20px;
     border-radius: 50px;
     background-image: linear-gradient(180deg,
@@ -89,28 +99,28 @@ header .header_right .login {
 .primary_button:hover {
     cursor: pointer;
     background-image: linear-gradient(180deg,
-    hsl(112, 90%, 40%),
-    hsl(112, 90%, 35%));
+            hsl(112, 90%, 40%),
+            hsl(112, 90%, 35%));
     box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
         0 4px 6px 0 rgb(93 100 148 / 20%);
 }
 
 @media (max-width: 800px) {
     .header .header_right .login {
-        @apply flex flex-col  gap-5;
+        @apply flex flex-col gap-5;
     }
 
     .header .header_left {
         /* @apply basis-5/12; */
     }
 
-    
+
 
     .header .header_right .login input {
         @apply shrink;
     }
 
-    .text_wonder{
+    .text_wonder {
         margin-left: 0;
     }
 }

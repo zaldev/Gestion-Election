@@ -39,6 +39,7 @@ export default async function handler(
                 res.status(400).json({ success: false })
                 console.log(error)
             }
+            break
         case "DELETE":
             try {
 
@@ -48,7 +49,7 @@ export default async function handler(
                 res.status(400).json({ success: false })
                 console.log(error)
             }
-
+            break
         default:
             break
     }
